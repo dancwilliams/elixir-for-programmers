@@ -7,7 +7,7 @@ defmodule TextClient.Prompter do
     |> check_input(game)
   end
 
-  defp check_input({ :error, reason }) do
+  defp check_input( :error, reason ) do
     IO.puts("Game ended: #{ reason }")
     exit(:normal)
   end
