@@ -6,7 +6,7 @@ use Mix.Config
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we use it
 # with brunch.io to recompile .js and .css sources.
-config :gallows, GallowsWeb.Endpoint,
+config :socket_gallows, SocketGallowsWeb.Endpoint,
   http: [port: 8081],
   debug_errors: true,
   code_reloader: true,
@@ -31,13 +31,13 @@ config :gallows, GallowsWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
-config :gallows, GallowsWeb.Endpoint,
+config :socket_gallows, SocketGallowsWeb.Endpoint,
   live_reload: [
     patterns: [
       ~r{priv/static/.*(js|css|png|jpeg|jpg|gif|svg)$},
       ~r{priv/gettext/.*(po)$},
-      ~r{lib/gallows_web/views/.*(ex)$},
-      ~r{lib/gallows_web/templates/.*(eex)$}
+      ~r{lib/socket_gallows_web/views/.*(ex)$},
+      ~r{lib/socket_gallows_web/templates/.*(eex)$}
     ]
   ]
 
