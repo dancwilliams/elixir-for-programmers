@@ -18,5 +18,13 @@ defmodule GallowsWeb.HangmanView do
   def turn( left, target ) do
     "opacity: 0.1"
   end
+  
+  def status( status, current_status ) when status == current_status do
+    "opacity: 1"
+  end
+  
+  def status( status, current_status ) do
+    "opacity: 0.1"
+  end
 
 end
