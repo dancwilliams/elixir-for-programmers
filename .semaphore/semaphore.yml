@@ -1,0 +1,110 @@
+version: v1.0
+name: Elixir for Programmers
+agent:
+  machine:
+    type: e1-standard-2
+    os_image: ubuntu1804
+
+execution_time_limit:
+  hours: 3
+      
+blocks: 
+  - name: Install Dependencies for Each Application 
+    task: 
+      env_vars: 
+        - name: MIX_ENV 
+          value: test 
+      jobs: 
+        - name: Mix and Cache Dictionary
+          commands:
+            - checkout
+            - cd dictionary
+            - mix local.hex --force 
+            - mix local.rebar --force 
+            - cache restore mix-deps-$(checksum mix.lock) 
+            - cache restore mix-build-$(checksum mix.lock) 
+            - mix do deps.get, compile 
+            - cache store mix-deps-$(checksum mix.lock) deps 
+            - cache store mix-build-$(checksum mix.lock) _build 
+        - name: Mix and Cache hangman
+          commands:
+            - checkout
+            - cd hangman
+            - mix local.hex --force 
+            - mix local.rebar --force 
+            - cache restore mix-deps-$(checksum mix.lock) 
+            - cache restore mix-build-$(checksum mix.lock) 
+            - mix do deps.get, compile 
+            - cache store mix-deps-$(checksum mix.lock) deps 
+            - cache store mix-build-$(checksum mix.lock) _build 
+  - name: Run Dialyzer for Dicitonary
+    task:
+      agent:
+        machine:
+          type: e1-standard-8
+          os_image: ubuntu1804
+      prologue:
+        commands:
+          - checkout
+          - cd dictionary
+          - cache restore mix-deps-$(checksum mix.lock) 
+          - cache restore mix-build-$(checksum mix.lock)
+          - cache restore dialyzer-cache-dictionary
+          - cache delete dialyzer-cache-dictionary
+          - mkdir ../../.mix
+          - mix local.rebar --force
+      jobs:
+        - name: Run Dialyzer
+          commands:
+            - mix dialyzer
+      epilogue:
+        commands:
+          - cache store dialyzer-cache-dictionary _build/dev
+  - name: Run Dialyzer for hangman
+    task:
+      agent:
+        machine:
+          type: e1-standard-8
+          os_image: ubuntu1804
+      prologue:
+        commands:
+          - checkout
+          - cd hangman
+          - cache restore mix-deps-$(checksum mix.lock) 
+          - cache restore mix-build-$(checksum mix.lock)
+          - cache restore dialyzer-cache-hangman
+          - cache delete dialyzer-cache-hangman
+          - mkdir ../../.mix
+          - mix local.rebar --force
+      jobs:
+        - name: Run Dialyzer
+          commands:
+            - mix dialyzer
+      epilogue:
+        commands:
+          - cache store dialyzer-cache-hangman _build/dev
+  - name: Test Everything!
+    task:
+      env_vars: 
+        - name: MIX_ENV 
+          value: test 
+        - name: DATABASE_POSTGRESQL_USERNAME
+          value: postgres
+        - name: DATABASE_POSTGRESQL_PASSWORD
+          value: ""
+      prologue:
+        commands:
+          - checkout
+      jobs:
+        - name: Unit Tests - Dictionary
+          commands:
+            - cd dictionary
+            - cache restore mix-deps-$(checksum mix.lock) 
+            - cache restore mix-build-$(checksum mix.lock)
+            - mix test --cover
+        - name: Unit Tests - Hangman
+          commands:
+            - cd hangman
+            - cache restore mix-deps-$(checksum mix.lock) 
+            - cache restore mix-build-$(checksum mix.lock)
+            - mix test --cover
