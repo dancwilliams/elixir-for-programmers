@@ -15,14 +15,16 @@ defmodule TextClient.MixProject do
   def application do
     [
       incluse_application:  [ :hangman ],
-      extra_applications:   [ :logger ]
+      extra_applications:   [ :logger ],
+      dialyzer: [plt_add_apps: [:mix]]
     ]
   end
 
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      hangman: [path: "../hangman" ]
+      hangman: [path: "../hangman" ],
+      {:dialyxir, "~> 1.0.0-rc.4", only: [:dev, :test], runtime: false}
     ]
   end
 end
