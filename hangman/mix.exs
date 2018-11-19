@@ -17,7 +17,8 @@ defmodule Hangman.MixProject do
       mod: { Hangman.Application, [] },
       extra_applications: [
         :logger
-      ]
+      ],
+      dialyzer: [plt_add_apps: [:mix]]
     ]
   end
 
@@ -25,6 +26,7 @@ defmodule Hangman.MixProject do
   defp deps do
     [
       { :dictionary, path: "../dictionary" },
+      {:dialyxir, "~> 1.0.0-rc.4", only: [:dev, :test], runtime: false}
     ]
   end
 end
