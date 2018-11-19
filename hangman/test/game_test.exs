@@ -4,7 +4,7 @@ defmodule GameTest do
 
   alias Hangman.Game
 
- test "new_game returns struture" do
+  test "new_game returns struture" do
 
     game = Game.new_game()
 
